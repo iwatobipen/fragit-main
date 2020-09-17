@@ -320,7 +320,7 @@ class GamessFMO(Standard):
         return self._get_FMOPRP_basestring() % self._calculateOrbitalGuess()
 
     def _get_FMOPRP_basestring(self):
-        return " $FMOPRP NPRINT=9 NGUESS=%i $END\n"
+        return " $FMOPRP NPRINT=9 IPIEDA=1 NGUESS=%i $END\n"
 
     def _calculateOrbitalGuess(self):
         nguess = 2 # project orbitals out of huckel guess
