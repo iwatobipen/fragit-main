@@ -85,9 +85,23 @@ class Fragmentation(FragItConfig):
             added = 0
             if self.mol.NumAtoms() == 0:
                 break
+            elif self.mol.NumAtoms() == 1:
+                atomic_charge = 0
+                if atom.GetAtomicNum() in [11, 19]: # Na+ and K+:
+                    atomic_charge = 1
+                elif atom.GetAtomicNum() in [9, 17]: # F- and Cl-
+                    atomic_charge = -1
+                    new_atom = openbabel.OBAtom()
+                    new_atom.Duplicate(atom)
+                    new_atom.SetFormalCharge(atomic_charge)
+                    _metalAtoms.append(new_atom)
+                    self.mol.DeleteAtom(atom)
+                    break
+
             for i in range(1, self.mol.NumAtoms()+1):
                 atom = self.mol.GetAtom(i)
-                if atom.GetAtomicNum() in [1,6,7,8,12,15,16]:
+                #if atom.GetAtomicNum() in [1,6,7,8,12,15,16]:
+                if atom.GetAtomicNum() in [1,6,7,8,12,15,16,9,17]:
                     if atom not in self._atoms: self._atoms.append(atom)
                     added += 1
                 else:
@@ -95,10 +109,10 @@ class Fragmentation(FragItConfig):
                     # the atoms are most-likely counter ions, so we give them an
                     # appropriate formal charge (of +/- 1)
                     atomic_charge = 0 # default
-                    if atom.GetAtomicNum() in [11, 19]: # Na+ and K+:
-                        atomic_charge = 1
-                    elif atom.GetAtomicNum() in [9, 17]: # F- and Cl-
-                        atomic_charge = -1
+                    #if atom.GetAtomicNum() in [11, 19]: # Na+ and K+:
+                    #    atomic_charge = 1
+                    #elif atom.GetAtomicNum() in [9, 17]: # F- and Cl-
+                    #    atomic_charge = -1
 
                     new_atom = openbabel.OBAtom()
                     new_atom.Duplicate(atom)
