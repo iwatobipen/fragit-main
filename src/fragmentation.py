@@ -6,7 +6,7 @@ import os
 import sys
 
 try:
-    import openbabel
+    from openbabel import openbabel 
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 import numpy
@@ -305,7 +305,6 @@ class Fragmentation(FragItConfig):
             self.pat.Match( self.mol )
             for atoms in self.pat.GetUMapList():
                 result.append({residue : atoms})
-
         self._residue_names = result
         return result
 
@@ -517,6 +516,7 @@ class Fragmentation(FragItConfig):
         self.validateTotalCharge()
 
 
+
     def getIntegerFragmentCharge(self, fragment):
         charge = self.getSumOfAtomicChargesInFragment(fragment)
         return int(round(charge,0))
@@ -596,7 +596,6 @@ class Fragmentation(FragItConfig):
         frag_name     = False
         residues = self.identifyResidues()
         charge_lbls = ["", "+", "-"]
-
         if len(atoms) == 0:
             raise ValueError("Error: FragIt [FRAGMENTATION] Cannot name empty fragments. Aborting.")
 
@@ -606,10 +605,15 @@ class Fragmentation(FragItConfig):
             element = Z2LABEL[atom.GetAtomicNum()]
             return "{0:s}{1:s}".format(element, charge_lbl)
         else:
+            resnames = []
             for residue in openbabel.OBResidueIter( self.mol ):
+                resname = set()
                 for atom in openbabel.OBResidueAtomIter( residue ):
-                    if atom.GetIdx() in atoms:
-                        return residue.GetName()
+                    if atom.GetIdx() in atoms[2:]: #because first two atoms are previous residues Ca
+                        resname.add(residue.GetName())
+                if len(list(resname)) > 0:
+                    resnames.append(list(resname)[0])
+            return "_".join(resnames)
         return "None"
 
 
