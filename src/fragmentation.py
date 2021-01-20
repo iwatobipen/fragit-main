@@ -613,7 +613,8 @@ class Fragmentation(FragItConfig):
                         resname.add(residue.GetName())
                 if len(list(resname)) > 0:
                     resnames.append(list(resname)[0])
-            return "_".join(resnames)
+            #return "_".join(resnames)
+            return resnames[-1]
         return "None"
 
 
